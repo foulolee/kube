@@ -97,6 +97,18 @@ spec:
             name: nginx2-service
             port:
               number: 80
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.100.100.54   # ← 여기로 강제 지정
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
 
 
