@@ -105,10 +105,17 @@ metadata:
   namespace: ingress-nginx
 spec:
   type: LoadBalancer
-  loadBalancerIP: 192.100.100.54   # ← 여기로 강제 지정
+  loadBalancerIP: 192.100.100.54
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/component: controller
   ports:
-    - port: 80
+    - name: http
+      port: 80
       targetPort: 80
       protocol: TCP
-
+    - name: https
+      port: 443
+      targetPort: 443
+      protocol: TCP
 
