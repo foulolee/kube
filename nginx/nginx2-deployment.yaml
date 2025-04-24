@@ -14,10 +14,19 @@ spec:
       labels:
         app: nginx-worker2
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - k8s-worker02
       containers:
-      - name: nginx
-        image: 192.100.100.44:5000/foulolee/mywebapp:latest
-        ports:
-        - containerPort: 80
+        - name: nginx
+          image: 192.100.100.44:5000/foulolee/mywebapp:latest
+          ports:
+            - containerPort: 80
       imagePullSecrets:
-      - name: my-registry-secret
+        - name: my-registry-secret
