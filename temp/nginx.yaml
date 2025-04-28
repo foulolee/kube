@@ -13,7 +13,7 @@ spec:
         app: nginx
         version: v1
     spec:
-          affinity:
+      affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -28,7 +28,7 @@ spec:
         ports:
         - containerPort: 80
       imagePullSecrets:
-        - name: my-registry-secret
+      - name: my-registry-secret
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -45,7 +45,7 @@ spec:
         app: nginx
         version: v2
     spec:
-       affinity:
+      affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -60,7 +60,7 @@ spec:
         ports:
         - containerPort: 80
       imagePullSecrets:
-        - name: my-registry-secret
+      - name: my-registry-secret
 ---
 apiVersion: v1
 kind: Service
@@ -68,7 +68,7 @@ metadata:
   name: nginx-combined-service
 spec:
   selector:
-    app: nginx  # version 상관 없이 app=nginx인 모든 파드
+    app: nginx
   ports:
   - protocol: TCP
     port: 80
