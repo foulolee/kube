@@ -13,11 +13,22 @@ spec:
         app: nginx
         version: v1
     spec:
+          affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - k8s-worker01
       containers:
       - name: nginx
-        image: nginx:1.25
+        image: 192.100.100.44:5000/foulolee/mywebapp:latest
         ports:
         - containerPort: 80
+      imagePullSecrets:
+        - name: my-registry-secret
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -34,11 +45,22 @@ spec:
         app: nginx
         version: v2
     spec:
+       affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - k8s-worker01
       containers:
       - name: nginx
-        image: nginx:1.25
+        image: 192.100.100.44:5000/foulolee/mywebapp:latest
         ports:
         - containerPort: 80
+      imagePullSecrets:
+        - name: my-registry-secret
 ---
 apiVersion: v1
 kind: Service
