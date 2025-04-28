@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+2apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx1-deployment
@@ -21,7 +21,7 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                      - k8s-worker01
+                      - k8s-worker02
       containers:
       - name: nginx
         image: 192.100.100.44:5000/foulolee/mywebapp:latest
