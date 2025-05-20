@@ -1,3 +1,26 @@
+# MetalLB IPAddressPool (192.100.100.53 사용)
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: default-ingress-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 192.100.100.54/32
+
+---
+# MetalLB L2Advertisement (L2 브로드캐스트 활성화)
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: advertise-default-ingress
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - default-ingress-pool
+
+---
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
