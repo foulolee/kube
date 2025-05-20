@@ -1,0 +1,82 @@
+pipeline {
+    agent any
+
+    environment {
+        DEPLOY_DIR = '/opt/tomcat/java'
+        IMAGE_NAME = 'foulolee/mywebapp:latest'
+        REGISTRY = '192.100.100.44:5000'
+        REGISTRY_USER = 'cent'
+        REGISTRY_PASS = '1234'
+    }
+
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'master',
+                    url: 'https://github.com/foulolee/java.git',
+                    credentialsId: 'lee'
+            }
+        }
+
+        stage('Copy to Tomcat Webapp') {
+            steps {
+                sh '''
+                    rm -rf ${DEPLOY_DIR}
+                    mkdir -p ${DEPLOY_DIR}
+                    cp -r * ${DEPLOY_DIR}/
+                '''
+            }
+        }
+
+        stage('Prepare Build Context') {
+            steps {
+                sh '''
+                    rm -rf ./app
+                    mkdir -p ./app
+                    cp -r /opt/tomcat/src/main/webapp/* ./app/
+                '''
+            }
+        }
+
+        stage('Podman Login & Pull Base Image') {
+            steps {
+                sh '''
+                    echo "${REGISTRY_PASS}" | podman login ${REGISTRY} -u "${REGISTRY_USER}" --password-stdin
+                    podman pull ${REGISTRY}/rocky9-custom:latest
+                '''
+            }
+        }
+
+        stage('Build Podman Image') {
+            steps {
+                script {
+                    writeFile file: 'Dockerfile', text: """
+                        FROM ${REGISTRY}/rocky9-custom:latest
+                        COPY app/ /usr/local/tomcat/webapps/ROOT/
+                    """
+                    sh 'podman build -t ${IMAGE_NAME} .'
+                }
+            }
+        }
+
+        stage('Push to Registry') {
+            steps {
+                sh '''
+                    set -x
+                    podman tag ${IMAGE_NAME} ${REGISTRY}/${IMAGE_NAME}
+                    podman push ${REGISTRY}/${IMAGE_NAME}
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Podman 이미지 빌드 및 업로드 완료'
+        }
+        failure {
+            echo '❌ 실패: 로그 확인 필요'
+        }
+    }
+}
+
